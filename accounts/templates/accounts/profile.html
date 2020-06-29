@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block body %}
+<h3>{{ person.username }}</h3>
+<!-- 팔로우 로직 구현-->
+{% if user != person %}
+{% if user in person.followers.all %}
+<a href="{% url 'accounts:follow' person.pk %}">팔로우 취소</a>
+{% else %}
+<a href="{% url 'accounts:follow' person.pk %}">팔로우</a>
+{% endif %}
+{% endif %}
+<!-- 유저가 작성한 모든 게시물 -->
+<p>유저가 작성한 게시글들</p>
+<ul>
+  {% for article in person.article_set.all %}
+  <li>{{ article.title }}</li>
+  <li>{{ article.content }}</li>
+  {% endfor %}
+</ul>
+
+<p>유저가 작성한 댓글들</p>
+<ul>
+  {% for comment in person.comment_set.all %}
+  <li>{{ comment.content }}</li>
+  {% empty %}
+  <p>댓글을 단 적이 없습니다.</p>
+  {% endfor %}
+</ul>
+
+<p>유저가 좋아요를 누른 게시글</p>
+<ul>
+  {% for like in person.like_articles.all %}
+  <li>{{ like.title }}</li>
+  {% empty %}
+  <p>좋아요를 누른 적이 없습니다.</p>
+  {% endfor %}
+</ul>
+
+{% endblock %}

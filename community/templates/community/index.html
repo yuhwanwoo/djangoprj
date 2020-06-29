@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>메인 페이지 입니다.</h1>
+<hr>
+<a href="{% url 'community:create' %}">[CREATE]</a>
+<hr>
+<p>{{ community.all|length }}개의 글</p>
+<hr>
+<br>
+{% for article in articles %}
+ <p>{{ article.pk }}번째 글</p>
+ <h2>{{ article.title }}</h2>
+<p>좋아요 개수 : {{ article.like_users.all|length }}</p>
+<p>추천 개수 : {{ article.recommend_users.all|length }}</p>
+<p>댓글 개수 : {{ article.comment_set.all|length }}</p>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-2">
+      {% include 'community/_like.html' %}
+    </div>
+
+    <div class="col-lg-2">
+      <a href="{% url 'community:detail' article.pk %}">[DETAIL]</a>
+    </div>
+  </div>
+</div>
+ <hr>
+ 
+{% endfor %}
+{% for num in community.paginator.page_range %}
+<a href="{% url 'community:index' %}?page={{ num }}">{{ num }}</a>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block body %}
+<h1>상세 페이지</h1>
+<hr>
+<p>{{ article.pk }}번째 글</p>
+<h2>{{ article.title }}</h2>
+<h3>{{ article.content }}</h3>
+
+{% if article.image %}
+<img src="{{ article.image.url }}" alt="{{ article.image }}">
+{% endif %}
+
+<hr>
+<p>{{ comments|length }}개의 댓글</p>
+<p>{{ article.comment_set.all|length }}</p>
+<ul>
+{% for comment in comments %}
+<li>{{ comment.content }}
+                                        <!-- 2개 이상의 값을 넘겨주고자 할 때 순서 주의-->
+  {% if comment.user.username == user.username %}
+  <form action="{% url 'community:comment_delete' article.pk comment.pk %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="댓글 삭제">
+  </form>
+  {% endif %}
+</li>
+{% empty %}
+<p>댓글이 없습니다.</p>
+{% endfor %}
+</ul>
+<hr>
+<form action="{% url 'community:comment_create' article.pk %}" method="POST">
+  {% csrf_token %}
+  {{ comment_form }}
+  <input type="submit" value="댓글생성">
+</form>
+<hr>
+{% if article.user.username == user.username %}
+<a href="{% url 'community:update' article.pk %}">[UPDATE]</a>
+<form action="{% url 'community:delete' article.pk %}" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="DELETE" class="btn btn-primary">
+</form>
+{% endif %}
+<a href="{% url 'community:index' %}">[back]</a>
+{% endblock %}
