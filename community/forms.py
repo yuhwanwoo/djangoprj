@@ -5,7 +5,8 @@ class CommunityForm(forms.ModelForm):
     class Meta:
         model = Community
          # fields = '__all__'
-        exclude = ['user']
+         
+        exclude = ['user','hits','like_users','recommend_users','date']
 
 class CommentForm(forms.ModelForm):
     class Meta:

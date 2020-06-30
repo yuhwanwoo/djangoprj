@@ -1,13 +1,11 @@
-{% if user in article.like_users.all %}
-<a href="{% url 'community:like' article.pk %}">좋아요 취소<i class="fas fa-thumbs-down"></i></a>
-{% else %}
-<a href="{% url 'community:like' article.pk %}"> 좋아요<i class="fas fa-thumbs-upp"></i></a>
-{% endif %}
 
-<div class="col-lg-6">
-  {% if user in article.recommend_users.all %}
-  <a href="{% url 'community:recommend' article.pk %}">추천 취소</a>
+<p class="card-text">
+  <span class="mr-3"><i class="far fa-comment"></i> : {{ article.comment_set.all|length }}</span>
+  <!-- Like -->
+  {% if user in article.like_users.all %}
+      <i class="fas fa-heart fa-lg like-button" data-id="{{ article.id }}" style="color: crimson;"></i>
   {% else %}
-  <a href="{% url 'community:recommend' article.pk %}">추천</a>
+      <i class="far fa-heart fa-lg like-button" data-id="{{ article.id }}" style="color: black;"></i>
   {% endif %}
-</div>
+  <span class="like-count-{{ article.id }}"> : {{ article.like_users.count }}</span>
+</p>

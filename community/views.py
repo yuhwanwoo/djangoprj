@@ -10,17 +10,23 @@ from django.contrib import messages
 
 from django.core.paginator import Paginator
 
+from django.http import JsonResponse
+
+from datetime import datetime
+
 # Create your views here.
 def index(request):
     #embed()
-    articles = Community.objects.all()
+    articles = Community.objects.all().order_by('-pk')
     # 1. Paginator(전체 리스트, 한 페이지당 개수)
-    paginator = Paginator(articles, 3)
+    paginator = Paginator(articles, 10)
     # 2. 몇 번째 페이지를 보여줄 것인지 GET으로 받
     # 'articles/?page=3'
     page = request.GET.get('page')
     # 해당하는 페이지의 게시글만 가져오기
     articles = paginator.get_page(page)
+    
+
     context = {
         'articles': articles
     }
@@ -31,6 +37,7 @@ def detail(request, community_pk):
     comment_form = CommentForm()
     # 1은 N을 보장할 수 없기 때문에 querySet(comment_set)형태로 조회해야한다.
     comments=article.comment_set.all()
+    article.click # 조회수
     context = {
         'article': article,
         'comments':comments,
@@ -45,6 +52,10 @@ def create(request):
         if form.is_valid():
             article = form.save(commit=False)
             article.user = request.user
+            myDate=datetime.now()
+            formatedDate=myDate.strftime("%Y.%m.%d")
+            
+            article.date=formatedDate
             article.save()
             messages.success(request, '게시글 작성 완료')
             return redirect('community:detail', article.pk)
@@ -119,9 +130,15 @@ def like(request, community_pk):
     # 사용자가 게시글의 좋아요 목록에 있으면 지우고 없으면 추가한다.
     if user in article.like_users.all():
         article.like_users.remove(user)
+        liked=False
     else:
         article.like_users.add(user)
-    return redirect('community:index')
+        liked=True
+    context={
+        'liked':liked,
+        'count':article.like_users.count(),
+    }
+    return JsonResponse(context)
 
 @login_required
 def recommend(request, community_pk):
@@ -132,3 +149,15 @@ def recommend(request, community_pk):
     else:
         article.recommend_users.add(user)
     return redirect('community:index')
+
+def border_search(request):
+    br = Community.objects.all() # 모든 Border 테이블의 모든 object들을 br에 저장하라
+
+    b = request.GET.get('b','') # GET request의 인자중에 b 값이 있으면 가져오고, 없으면 빈 문자열 넣기
+
+    if b: # b에 값이 들어있으면 true
+        br = br.filter(title__icontains=b) # 의 title이 contains br의 title에 포함되어 있으면 br에 저장
+
+    return render(request, 'community/border_search.html', { 'border_search':br , 'b':b})
+    # br에는 Border 테이블에 title 이름이 'Singapore'인 데이터들이 들어있고,
+    # b에는 내가 처음에 입력했던 'Singapore'가 들어있다.

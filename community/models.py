@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from imagekit.models import ImageSpecField
 from imagekit.processors import Thumbnail
+from django.utils import timezone
 def articles_image_path(instance, filename):
     return f'user_{instance.user.pk}/{filename}'
 
@@ -11,7 +12,9 @@ class Community(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    date=models.CharField(max_length=20)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete = models.CASCADE)
+    hits=models.PositiveIntegerField(default=0)
     # blank = 유효성 검사시
     # null = DB상에 컬럼에
     image = models.ImageField(blank=True, upload_to=articles_image_path)
@@ -33,6 +36,10 @@ class Community(models.Model):
         blank=True
     )
 
+    @property
+    def click(self):
+        self.hits+=1
+        self.save()
 
     def __str__(self):
         return f'{self.pk}번째 글, {self.title}-{self.content}'
@@ -47,3 +54,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Community:{self.article}, {self.pk}-{self.content}'
+

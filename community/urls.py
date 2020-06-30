@@ -12,4 +12,5 @@ urlpatterns = [
     path('<int:community_pk>/comment_delete/<int:comment_pk>/',views.comment_delete, name="comment_delete"),
     path('<int:community_pk>/like/', views.like, name="like"),
     path('<int:community_pk>/recommend/', views.recommend, name="recommend"),
+    path('search/', views.border_search, name='search'),
 ]

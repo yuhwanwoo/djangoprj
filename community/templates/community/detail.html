@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block body %}
-<h1>상세 페이지</h1>
+<div class="art">
+<div class="mar">
+<h3>{{ article.title }}</h3>
+</div>
+
 <hr>
-<p>{{ article.pk }}번째 글</p>
-<h2>{{ article.title }}</h2>
 <h3>{{ article.content }}</h3>
 
 {% if article.image %}
@@ -42,5 +45,8 @@
   <input type="submit" value="DELETE" class="btn btn-primary">
 </form>
 {% endif %}
+{% include 'community/_like.html' %}
 <a href="{% url 'community:index' %}">[back]</a>
+<script src="{% static 'community/js/like.js' %}"></script>
+</div>
 {% endblock %}
